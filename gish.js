@@ -1,5 +1,5 @@
 var gishBottom = 500;
-var gishGravity = 1.3;
+var gishGravity = 4.3;
 
 function GishPoint (x, y) {
 	this.m = 1;
@@ -37,9 +37,9 @@ GishPoint.prototype.draw = function (ctx) {
 	ctx.strokeStyle = "red";
 	ctx.beginPath();
 	ctx.moveTo(this.x, this.y);
-	ctx.lineTo(this.x+this.force.fx*10, this.y);
+	ctx.lineTo(this.x+this.force.fx, this.y);
 	ctx.moveTo(this.x, this.y);
-	ctx.lineTo(this.x, this.y+this.force.fy*10);
+	ctx.lineTo(this.x, this.y+this.force.fy);
 	ctx.stroke();
 }
 
@@ -88,7 +88,7 @@ GishPoint.prototype.distance = function(pb) {
 function GishArm (ph, pj) {
 	this.ph = ph;
 	this.length = pj.distance(ph);
-	this.k = 0.220;
+	this.k = 0.4520;
 }
 
 GishArm.prototype.currentLength = function(shoulder) {
@@ -100,32 +100,51 @@ GishArm.prototype.force = function(clength) {
 	return this.k * (clength-this.length);
 };
 
+function makeLine (pa, pb) {
+	pa.connectTo(pb);
+	pb.connectTo(pa);
+}
+
 function init () {
 	var ps = [];
-	ps[0] = new GishPoint(200,200);
-	ps[0].speed.sx = 20;
 	var r = 100;
-	for (var i = 0; i < Math.PI*2; i+=Math.PI/5) {
-		ps[ps.length] = new GishPoint(200 + r*Math.sin(i),
-		 200+r*Math.cos(i));
+	ps[0] = new GishPoint(r,r);
+	ps[0].speed.sx = 40;
+	for (var i = 0; i < Math.PI*2; i+=Math.PI/7) {
+		ps[ps.length] = new GishPoint(r + r*Math.sin(i),
+		 r+r*Math.cos(i));
 	};
-	for (var i = 0; i < ps.length; i++) {
-		for (var j = 0; j < ps.length; j++) {
+	for (var j = 1; j < ps.length; j++) {
+			makeLine(ps[0],ps[j]);
+	};
+	for (var j = 1; j < ps.length-1; j++) {
+		makeLine(ps[j],ps[j+1]);
+	};
+	makeLine(ps[1], ps[ps.length-1]);
+
+
+	var bstart = ps.length;
+	for (var i = 0; i < Math.PI*2; i+=Math.PI/7) {
+		ps[ps.length] = new GishPoint(r + r*Math.sin(i),
+		 r+r*Math.cos(i));
+	};
+	ps[bstart].speed.sx = -10;
+	for (var i = bstart; i < ps.length; i++) {
+		for (var j = bstart; j < ps.length; j++) {
 			if(i!=j)
-				ps[i].connectTo(ps[j]);
+				makeLine(ps[j], ps[i]);
 		};
 	};
 
 	var cvs = document.getElementById('cvs');
-	cvs.height = cvs.clientHeight;
-	cvs.width = cvs.clientWidth;
+	cvs.height = 500;
+	cvs.width = 500;
 	var ctx = cvs.getContext('2d');
 	setInterval(function () {
-		ctx.fillStyle='rgba(220,220,220,0.8)';
+		ctx.fillStyle='rgba(230,230,230,0.68)';
         ctx.fillRect(0,0,gishBottom, gishBottom);
 		for(p in ps){
 			ps[p].applyForce(0.16);
-			ps[p].draw(ctx);
 		}
 		for(p in ps){
 			ps[p].go(0.16);
