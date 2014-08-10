@@ -1,5 +1,5 @@
 var gishBottom = 500;
-var gishGravity = 4.3;
+var gishGravity = 2.3;
 
 function GishPoint (x, y) {
 	this.m = 1;
@@ -124,7 +124,7 @@ function init () {
 
 
 	var bstart = ps.length;
-	for (var i = 0; i < Math.PI*2; i+=Math.PI/7) {
+	for (var i = 0; i < Math.PI*2; i+=Math.PI/4) {
 		ps[ps.length] = new GishPoint(r + r*Math.sin(i),
 		 r+r*Math.cos(i));
 	};
