@@ -1,3 +1,3 @@
 gish
 ====
-[[http://mimers.github.io/gish]]
+http://mimers.github.io/gish/
